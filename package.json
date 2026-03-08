@@ -4,7 +4,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun run --watch src/index.tsx"
+    "dev": "bun run --watch src/index.tsx",
+    "mock": "MOCK=1 bun run --watch src/index.tsx"
   },
   "devDependencies": {
     "@types/bun": "latest"
@@ -15,9 +16,12 @@
   "dependencies": {
     "@babel/core": "^7.29.0",
     "@babel/preset-typescript": "^7.28.5",
+    "@clack/prompts": "^1.0.1",
+    "@google/genai": "^1.42.0",
     "@opentui/core": "^0.1.81",
     "@opentui/solid": "^0.1.81",
     "babel-preset-solid": "1.9.9",
-    "solid-js": "1.9.9"
+    "solid-js": "1.9.9",
+    "zod": "^4.3.6"
   }
 }
