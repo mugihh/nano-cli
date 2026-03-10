@@ -17,7 +17,7 @@ export function GenerateScreen(props: Props) {
       gap={1}
     >
       <ascii_font font="tiny" text="nano-cli" />
-      <text>🍌 Step 3 / 3 — Enter your prompt</text>
+      <text>🍌 Step 4 / 4 — Enter your prompt</text>
 
       <box flexDirection="column" gap={1} width={60}>
         <input
