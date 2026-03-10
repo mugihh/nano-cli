@@ -16,6 +16,7 @@ export interface GenerateOptions {
   prompt: string;
   model: Model;
   aspectRatio: AspectRatio;
+  savePath: string;
 }
 
 export interface GenerateResult {
@@ -46,6 +47,13 @@ function extractImageAndText(
   return { imageBase64, mimeType, text };
 }
 
+function resolvePath(inputPath: string): string {
+  if (inputPath.startsWith("~/")) {
+    return join(homedir(), inputPath.slice(2));
+  }
+  return inputPath;
+}
+
 export async function generateImages(
   apiKey: string,
   options: GenerateOptions,
@@ -67,7 +75,7 @@ export async function generateImages(
 
   if (!imageBase64) throw new Error("No image returned from API");
 
-  const outputDir = join(homedir(), "Pictures", "nano-cli");
+  const outputDir = resolvePath(options.savePath);
   mkdirSync(outputDir, { recursive: true });
 
   const timestamp = Date.now();
@@ -82,19 +90,15 @@ export async function generateImages(
     texts: text ? [text] : [],
   };
 }
-// src/lib/gemini.ts 最下面加
 
 export async function generateImagesMock(
   options: GenerateOptions,
 ): Promise<GenerateResult> {
-  // 模擬 API 延遲
   await new Promise((resolve) => setTimeout(resolve, 2000));
-
-  // 模擬偶爾出錯（方便測試 error state）
   // if (Math.random() > 0.7) throw new Error("Mock API error");
 
   return {
-    filePaths: ["/mock/path/to/image-1234567890.png"],
+    filePaths: [`${resolvePath(options.savePath)}/mock-image-1234567890.png`],
     texts: ["Mock: Here is your generated image!"],
   };
 }

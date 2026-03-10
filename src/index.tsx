@@ -3,6 +3,7 @@ import { render, useKeyboard } from "@opentui/solid";
 import { ApiKeyScreen } from "./components/ApiKeyScreen";
 import { ModelScreen, MODEL_OPTIONS } from "./components/ModelScreen";
 import { AspectScreen, ASPECT_OPTIONS } from "./components/AspectScreen";
+import { PathScreen } from "./components/PathScreen";
 import { GenerateScreen } from "./components/GenerateScreen";
 import { ResultScreen } from "./components/ResultScreen";
 import { getConfig, saveConfig } from "./lib/config";
@@ -11,7 +12,7 @@ import { IS_MOCK } from "./lib/dev";
 import type { Model, AspectRatio } from "./lib/gemini";
 import { appendFileSync } from "fs";
 
-type Screen = "api-key" | "model" | "aspect" | "prompt" | "result";
+type Screen = "api-key" | "model" | "aspect" | "path" | "prompt" | "result";
 
 render(() => {
   const config = getConfig();
@@ -22,6 +23,7 @@ render(() => {
   const [apiKey, setApiKey] = createSignal(config?.apiKey ?? "");
   const [model, setModel] = createSignal<Model>("nano-banana");
   const [aspectRatio, setAspectRatio] = createSignal<AspectRatio>("1:1");
+  const [savePath, setSavePath] = createSignal("./output");
   const [isLoading, setIsLoading] = createSignal(false);
   const [result, setResult] = createSignal<{
     filePaths: string[];
@@ -62,9 +64,9 @@ render(() => {
     el?.focus();
     setTimeout(() => {
       el?.on("itemSelected", (index: number) => {
-        aspectRef = null; // 清掉！
+        aspectRef = null;
         setAspectRatio(ASPECT_OPTIONS[index].value);
-        setScreen("prompt");
+        setScreen("path");
       });
     }, 100);
   };
@@ -78,11 +80,13 @@ render(() => {
             prompt,
             model: model(),
             aspectRatio: aspectRatio(),
+            savePath: savePath(),
           })
         : await generateImages(apiKey(), {
             prompt,
             model: model(),
             aspectRatio: aspectRatio(),
+            savePath: savePath(),
           });
       setResult(res);
       setScreen("result");
@@ -111,6 +115,14 @@ render(() => {
         <AspectScreen
           onSelect={(r) => setAspectRatio(r)}
           selectRef={handleAspectRef}
+        />
+      )}
+      {screen() === "path" && (
+        <PathScreen
+          onSubmit={(path) => {
+            setSavePath(path);
+            setScreen("prompt");
+          }}
         />
       )}
       {screen() === "prompt" && (
