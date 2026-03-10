@@ -42,7 +42,6 @@ render(() => {
     } else if (s === "aspect" && aspectRef) {
       if (key.name === "return") aspectRef.selectCurrent();
     } else if (s === "path") {
-      console.log("path key", key.name, "pathRef", pathRef);
       if (pathRef && key.name === "return") pathRef.selectCurrent();
     } else if (s === "result") {
       if (key.name === "return" || key.name === "q") {
@@ -76,12 +75,10 @@ render(() => {
   };
 
   const handlePathRef = (el: any) => {
-    console.log("pathRef set", el);
     pathRef = el;
     el?.focus();
     setTimeout(() => {
       el?.on("itemSelected", (index: number) => {
-        console.log("itemSelected", index);
         const selected = PATH_PRESETS[index];
         if (selected.value === "custom") {
           pathRef = null;
