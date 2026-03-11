@@ -95,10 +95,18 @@ export async function generateImagesMock(
   options: GenerateOptions,
 ): Promise<GenerateResult> {
   await new Promise((resolve) => setTimeout(resolve, 2000));
-  // if (Math.random() > 0.7) throw new Error("Mock API error");
+
+  const outputDir = resolvePath(options.savePath);
+  mkdirSync(outputDir, { recursive: true });
+
+  const mockImagePath = join(import.meta.dir, "mock-image.jpeg");
+  const fileName = `mock-${Date.now()}.png`;
+  const filePath = join(outputDir, fileName);
+
+  await Bun.write(filePath, Bun.file(mockImagePath));
 
   return {
-    filePaths: [`${resolvePath(options.savePath)}/mock-image-1234567890.png`],
+    filePaths: [filePath],
     texts: ["Mock: Here is your generated image!"],
   };
 }
