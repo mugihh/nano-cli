@@ -77,8 +77,59 @@ render(() => {
   let imageSizeRef: any;
   let pathRef: any;
 
+  function goBack() {
+    const currentScreen = screen();
+
+    if (currentScreen === "provider") return;
+
+    if (currentScreen === "api-key") {
+      setError(null);
+      setScreen("provider");
+      return;
+    }
+
+    if (currentScreen === "model") {
+      setError(null);
+      setScreen("provider");
+      return;
+    }
+
+    if (currentScreen === "aspect" || currentScreen === "image-size") {
+      setError(null);
+      setScreen("model");
+      return;
+    }
+
+    if (currentScreen === "path") {
+      setError(null);
+      if (isCustomPath()) {
+        setIsCustomPath(false);
+        return;
+      }
+
+      setScreen(provider() === "gemini" ? "aspect" : "image-size");
+      return;
+    }
+
+    if (currentScreen === "prompt") {
+      setError(null);
+      setScreen("path");
+      return;
+    }
+
+    if (currentScreen === "result") {
+      setError(null);
+      setScreen("prompt");
+    }
+  }
+
   useKeyboard((key) => {
     const s = screen();
+    if (key.name === "escape") {
+      goBack();
+      return;
+    }
+
     if (s === "provider" && providerRef) {
       if (key.name === "return") providerRef.selectCurrent();
     } else if (s === "model" && modelRef) {
