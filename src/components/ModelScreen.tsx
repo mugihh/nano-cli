@@ -4,6 +4,7 @@ import type { Model } from "../lib/gemini";
 interface Props {
   onSelect: (model: Model) => void;
   selectRef: (el: any) => void;
+  step?: string;
 }
 
 const OPTIONS = [
@@ -31,7 +32,7 @@ export function ModelScreen(props: Props) {
       gap={1}
     >
       <ascii_font font="tiny" text="nano-cli" />
-      <text>🍌 Step 1 / 4 — Choose a model</text>
+      <text>🍌 {props.step ?? "Step 1 / 4"} — Choose a model</text>
       <select ref={props.selectRef} options={OPTIONS} width={50} height={4} />
       <text style={{ fg: "gray" }}>↑ ↓ to move, Enter to confirm</text>
     </box>

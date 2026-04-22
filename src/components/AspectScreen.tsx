@@ -3,6 +3,7 @@ import type { AspectRatio } from "../lib/gemini";
 interface Props {
   onSelect: (ratio: AspectRatio) => void;
   selectRef: (el: any) => void;
+  step?: string;
 }
 
 const OPTIONS = [
@@ -29,7 +30,7 @@ export function AspectScreen(props: Props) {
       gap={1}
     >
       <ascii_font font="tiny" text="nano-cli" />
-      <text>🍌 Step 2 / 4 — Choose aspect ratio</text>
+      <text>🍌 {props.step ?? "Step 2 / 4"} — Choose aspect ratio</text>
       <select ref={props.selectRef} options={OPTIONS} width={50} height={7} />
       <text style={{ fg: "gray" }}>↑ ↓ to move, Enter to confirm</text>
     </box>

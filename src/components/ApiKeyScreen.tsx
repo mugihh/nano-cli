@@ -1,18 +1,30 @@
 // src/components/ApiKeyScreen.tsx
 import { createSignal } from "solid-js";
+import type { Provider } from "../lib/providers";
 
 interface Props {
+  provider: Provider;
+  initialValue?: string;
   onSubmit: (apiKey: string) => void;
 }
 
 export function ApiKeyScreen(props: Props) {
-  const [value, setValue] = createSignal("");
+  const [value, setValue] = createSignal(props.initialValue ?? "");
   const [error, setError] = createSignal("");
 
   function handleSubmit() {
     const key = value().trim();
-    if (!key.startsWith("AIza") || key.length < 20) {
-      setError("Invalid API key format");
+    const isGeminiKey = key.startsWith("AIza") && key.length >= 20;
+    const isOpenAIKey = key.startsWith("sk-") && key.length >= 20;
+    const isValid =
+      props.provider === "gemini" ? isGeminiKey : isOpenAIKey;
+
+    if (!isValid) {
+      setError(
+        props.provider === "gemini"
+          ? "Invalid Gemini API key format"
+          : "Invalid OpenAI API key format",
+      );
       return;
     }
     setError("");
@@ -30,12 +42,15 @@ export function ApiKeyScreen(props: Props) {
       <ascii_font font="tiny" text="nano-cli" />
       <text>🍌 Image Generator</text>
       <box flexDirection="column" gap={1} width={50}>
-        <text>Enter your Gemini API Key:</text>
+        <text>
+          Enter your {props.provider === "gemini" ? "Gemini" : "OpenAI"} API
+          Key:
+        </text>
         <input
           value={value()}
           onChange={(v) => setValue(v)}
           onSubmit={handleSubmit}
-          placeholder="AIza..."
+          placeholder={props.provider === "gemini" ? "AIza..." : "sk-..."}
           width={50}
         />
         <text style={{ fg: "red" }}>{error()}</text>

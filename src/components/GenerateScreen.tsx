@@ -3,6 +3,7 @@ import { createSignal } from "solid-js";
 interface Props {
   onSubmit: (prompt: string) => void;
   isLoading: boolean;
+  step?: string;
 }
 
 export function GenerateScreen(props: Props) {
@@ -17,7 +18,7 @@ export function GenerateScreen(props: Props) {
       gap={1}
     >
       <ascii_font font="tiny" text="nano-cli" />
-      <text>🍌 Step 4 / 4 — Enter your prompt</text>
+      <text>🍌 {props.step ?? "Step 4 / 4"} — Enter your prompt</text>
 
       <box flexDirection="column" gap={1} width={60}>
         <input

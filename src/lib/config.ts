@@ -2,6 +2,7 @@
 import { homedir } from "os";
 import { join } from "path";
 import { mkdirSync, existsSync, readFileSync, writeFileSync } from "fs";
+import type { Provider } from "./providers";
 
 const CONFIG_DIR = join(homedir(), ".config", "nano-cli");
 const CONFIG_PATH = join(CONFIG_DIR, "config.json");
@@ -29,7 +30,7 @@ export function saveConfig(partial: Partial<Config>): void {
   );
 }
 
-export function hasApiKey(provider: "gemini" | "openai"): boolean {
+export function hasApiKey(provider: Provider): boolean {
   const config = getConfig();
   return provider === "gemini"
     ? config?.apiKey != null

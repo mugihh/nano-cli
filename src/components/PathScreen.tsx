@@ -6,6 +6,7 @@ interface Props {
   isCustom: boolean;
   selectRef: (el: any) => void;
   onCustomSubmit: (path: string) => void;
+  step?: string;
 }
 
 export const PATH_PRESETS = [
@@ -42,7 +43,7 @@ export function PathScreen(props: Props) {
         when={props.isCustom}
         fallback={
           <>
-            <text>🍌 Step 3 / 4 — Save path</text>
+            <text>🍌 {props.step ?? "Step 3 / 4"} — Save path</text>
             <select
               ref={props.selectRef}
               options={PATH_PRESETS}
@@ -53,7 +54,7 @@ export function PathScreen(props: Props) {
           </>
         }
       >
-        <text>🍌 Step 3 / 4 — Custom save path</text>
+        <text>🍌 {props.step ?? "Step 3 / 4"} — Custom save path</text>
         <input
           value={value()}
           onChange={(v: string) => setValue(v)}
