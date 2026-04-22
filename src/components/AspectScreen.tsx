@@ -31,7 +31,7 @@ export function AspectScreen(props: Props) {
       <ascii_font font="tiny" text="nano-cli" />
       <text>🍌 Step 2 / 4 — Choose aspect ratio</text>
       <select ref={props.selectRef} options={OPTIONS} width={50} height={7} />
-      <text color="gray">↑ ↓ to move, Enter to confirm</text>
+      <text style={{ fg: "gray" }}>↑ ↓ to move, Enter to confirm</text>
     </box>
   );
 }

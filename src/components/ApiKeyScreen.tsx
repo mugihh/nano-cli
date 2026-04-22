@@ -38,8 +38,8 @@ export function ApiKeyScreen(props: Props) {
           placeholder="AIza..."
           width={50}
         />
-        <text color="red">{error()}</text>
-        <text color="gray" attributes={0x02}>
+        <text style={{ fg: "red" }}>{error()}</text>
+        <text style={{ fg: "gray", attributes: 0x02 }}>
           Key will be saved to ~/.config/nano-cli/config.json
         </text>
       </box>

@@ -9,9 +9,21 @@ interface Props {
 }
 
 export const PATH_PRESETS = [
-  { name: "~/Pictures/nano-cli", value: "~/Pictures/nano-cli" },
-  { name: "./output", value: "./output" },
-  { name: "Custom...", value: "custom" },
+  {
+    name: "~/Pictures/nano-cli",
+    description: "Save to your Pictures folder",
+    value: "~/Pictures/nano-cli",
+  },
+  {
+    name: "./output",
+    description: "Save to a local output folder",
+    value: "./output",
+  },
+  {
+    name: "Custom...",
+    description: "Enter a custom save path",
+    value: "custom",
+  },
 ];
 
 export function PathScreen(props: Props) {
@@ -37,7 +49,7 @@ export function PathScreen(props: Props) {
               width={50}
               height={5}
             />
-            <text color="gray">↑ ↓ to move, Enter to confirm</text>
+            <text style={{ fg: "gray" }}>↑ ↓ to move, Enter to confirm</text>
           </>
         }
       >
@@ -49,7 +61,7 @@ export function PathScreen(props: Props) {
           width={50}
           placeholder="e.g. /Users/you/Desktop/images"
         />
-        <text color="gray">Enter to confirm</text>
+        <text style={{ fg: "gray" }}>Enter to confirm</text>
       </Show>
     </box>
   );

@@ -7,7 +7,8 @@ const CONFIG_DIR = join(homedir(), ".config", "nano-cli");
 const CONFIG_PATH = join(CONFIG_DIR, "config.json");
 
 interface Config {
-  apiKey: string;
+  apiKey?: string; // Gemini
+  openaiApiKey?: string; // OpenAI
 }
 
 export function getConfig(): Config | null {
@@ -19,11 +20,18 @@ export function getConfig(): Config | null {
   }
 }
 
-export function saveConfig(config: Config): void {
+export function saveConfig(partial: Partial<Config>): void {
   mkdirSync(CONFIG_DIR, { recursive: true });
-  writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2));
+  const existing = getConfig() ?? {};
+  writeFileSync(
+    CONFIG_PATH,
+    JSON.stringify({ ...existing, ...partial }, null, 2),
+  );
 }
 
-export function hasApiKey(): boolean {
-  return getConfig()?.apiKey != null;
+export function hasApiKey(provider: "gemini" | "openai"): boolean {
+  const config = getConfig();
+  return provider === "gemini"
+    ? config?.apiKey != null
+    : config?.openaiApiKey != null;
 }

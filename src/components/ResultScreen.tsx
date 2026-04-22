@@ -17,23 +17,23 @@ export function ResultScreen(props: Props) {
       <ascii_font font="tiny" text="Done!" />
 
       <box flexDirection="column" gap={1} width={60}>
-        <text color="green">✅ Image generated successfully!</text>
+        <text style={{ fg: "green" }}>✅ Image generated successfully!</text>
 
         {props.filePaths.map((path) => (
           <box flexDirection="column">
-            <text color="gray">Saved to:</text>
-            <text color="cyan">{path}</text>
+            <text style={{ fg: "gray" }}>Saved to:</text>
+            <text style={{ fg: "cyan" }}>{path}</text>
           </box>
         ))}
 
         {props.texts.length > 0 && (
           <box flexDirection="column">
-            <text color="gray">Model response:</text>
+            <text style={{ fg: "gray" }}>Model response:</text>
             <text>{props.texts.join(" ")}</text>
           </box>
         )}
 
-        <text color="gray" marginTop={1}>
+        <text style={{ fg: "gray" }} marginTop={1}>
           Press Enter or Q to go back
         </text>
       </box>

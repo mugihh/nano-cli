@@ -31,9 +31,9 @@ export function GenerateScreen(props: Props) {
           width={60}
         />
         {props.isLoading ? (
-          <text color="yellow">⏳ Generating...</text>
+          <text style={{ fg: "yellow" }}>⏳ Generating...</text>
         ) : (
-          <text color="gray">Enter to generate</text>
+          <text style={{ fg: "gray" }}>Enter to generate</text>
         )}
       </box>
     </box>

@@ -55,8 +55,11 @@ render(() => {
     el?.focus();
     setTimeout(() => {
       el?.on("itemSelected", (index: number) => {
+        const selected = MODEL_OPTIONS[index];
+        if (!selected) return;
+
         modelRef = null;
-        setModel(MODEL_OPTIONS[index].value);
+        setModel(selected.value);
         setScreen("aspect");
       });
     }, 100);
@@ -67,8 +70,11 @@ render(() => {
     el?.focus();
     setTimeout(() => {
       el?.on("itemSelected", (index: number) => {
+        const selected = ASPECT_OPTIONS[index];
+        if (!selected) return;
+
         aspectRef = null;
-        setAspectRatio(ASPECT_OPTIONS[index].value);
+        setAspectRatio(selected.value);
         setScreen("path");
       });
     }, 100);
@@ -80,6 +86,8 @@ render(() => {
     setTimeout(() => {
       el?.on("itemSelected", (index: number) => {
         const selected = PATH_PRESETS[index];
+        if (!selected) return;
+
         if (selected.value === "custom") {
           pathRef = null;
           setIsCustomPath(true);
@@ -161,7 +169,7 @@ render(() => {
       )}
       {error() && (
         <box justifyContent="center" marginTop={1}>
-          <text color="red">❌ {error()}</text>
+          <text style={{ fg: "red" }}>❌ {error()}</text>
         </box>
       )}
     </box>
