@@ -4,11 +4,11 @@ import { join } from "path";
 import { mkdirSync } from "fs";
 import { homedir } from "os";
 
-export type Model = "image-1.5";
+export type Model = "gpt-image-2";
 export type ImageSize = "1024x1024" | "1536x1024" | "1024x1536" | "auto";
 
 const MODEL_MAP: Record<Model, string> = {
-  "image-1.5": "gpt-image-1.5",
+  "gpt-image-2": "gpt-image-2",
 };
 
 export interface GenerateOptions {

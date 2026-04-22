@@ -5,15 +5,31 @@ import {
   ProviderScreen,
   PROVIDER_OPTIONS,
 } from "./components/ProviderScreen";
-import { ModelScreen, MODEL_OPTIONS } from "./components/ModelScreen";
+import {
+  ModelScreen,
+  GEMINI_MODEL_OPTIONS,
+  OPENAI_MODEL_OPTIONS,
+} from "./components/ModelScreen";
 import { AspectScreen, ASPECT_OPTIONS } from "./components/AspectScreen";
+import {
+  ImageSizeScreen,
+  SIZE_OPTIONS,
+} from "./components/ImageSizeScreen";
 import { PathScreen, PATH_PRESETS } from "./components/PathScreen";
 import { GenerateScreen } from "./components/GenerateScreen";
 import { ResultScreen } from "./components/ResultScreen";
 import { getConfig, hasApiKey, saveConfig } from "./lib/config";
-import { generateImages, generateImagesMock } from "./lib/gemini";
+import {
+  generateImages as generateGeminiImages,
+  generateImagesMock as generateGeminiImagesMock,
+} from "./lib/gemini";
+import {
+  generateImages as generateOpenAIImages,
+  generateImagesMock as generateOpenAIImagesMock,
+} from "./lib/openai";
 import { IS_MOCK } from "./lib/dev";
-import type { Model, AspectRatio } from "./lib/gemini";
+import type { Model as GeminiModel, AspectRatio } from "./lib/gemini";
+import type { Model as OpenAIModel, ImageSize } from "./lib/openai";
 import type { Provider } from "./lib/providers";
 
 type Screen =
@@ -21,6 +37,7 @@ type Screen =
   | "api-key"
   | "model"
   | "aspect"
+  | "image-size"
   | "path"
   | "prompt"
   | "result";
@@ -39,8 +56,12 @@ render(() => {
   const [openaiApiKey, setOpenaiApiKey] = createSignal(
     config?.openaiApiKey ?? "",
   );
-  const [model, setModel] = createSignal<Model>("nano-banana");
+  const [geminiModel, setGeminiModel] =
+    createSignal<GeminiModel>("nano-banana");
+  const [openaiModel, setOpenaiModel] =
+    createSignal<OpenAIModel>("gpt-image-2");
   const [aspectRatio, setAspectRatio] = createSignal<AspectRatio>("1:1");
+  const [imageSize, setImageSize] = createSignal<ImageSize>("auto");
   const [savePath, setSavePath] = createSignal("./output");
   const [isCustomPath, setIsCustomPath] = createSignal(false);
   const [isLoading, setIsLoading] = createSignal(false);
@@ -53,6 +74,7 @@ render(() => {
   let providerRef: any;
   let modelRef: any;
   let aspectRef: any;
+  let imageSizeRef: any;
   let pathRef: any;
 
   useKeyboard((key) => {
@@ -63,6 +85,8 @@ render(() => {
       if (key.name === "return") modelRef.selectCurrent();
     } else if (s === "aspect" && aspectRef) {
       if (key.name === "return") aspectRef.selectCurrent();
+    } else if (s === "image-size" && imageSizeRef) {
+      if (key.name === "return") imageSizeRef.selectCurrent();
     } else if (s === "path") {
       if (pathRef && key.name === "return") pathRef.selectCurrent();
     } else if (s === "result") {
@@ -83,13 +107,6 @@ render(() => {
         providerRef = null;
         setProvider(selected.value);
 
-        if (selected.value === "openai") {
-          setError(
-            "OpenAI provider is selected, but the OpenAI model/settings flow will be wired in the next step.",
-          );
-          return;
-        }
-
         setError(null);
         setScreen(IS_MOCK || hasApiKey(selected.value) ? "model" : "api-key");
       });
@@ -101,12 +118,20 @@ render(() => {
     el?.focus();
     setTimeout(() => {
       el?.on("itemSelected", (index: number) => {
-        const selected = MODEL_OPTIONS[index];
+        const selected =
+          provider() === "gemini"
+            ? GEMINI_MODEL_OPTIONS[index]
+            : OPENAI_MODEL_OPTIONS[index];
         if (!selected) return;
 
         modelRef = null;
-        setModel(selected.value);
-        setScreen("aspect");
+        if (provider() === "gemini") {
+          setGeminiModel(selected.value as GeminiModel);
+          setScreen("aspect");
+        } else {
+          setOpenaiModel(selected.value as OpenAIModel);
+          setScreen("image-size");
+        }
       });
     }, 100);
   };
@@ -121,6 +146,21 @@ render(() => {
 
         aspectRef = null;
         setAspectRatio(selected.value);
+        setScreen("path");
+      });
+    }, 100);
+  };
+
+  const handleImageSizeRef = (el: any) => {
+    imageSizeRef = el;
+    el?.focus();
+    setTimeout(() => {
+      el?.on("itemSelected", (index: number) => {
+        const selected = SIZE_OPTIONS[index];
+        if (!selected) return;
+
+        imageSizeRef = null;
+        setImageSize(selected.value);
         setScreen("path");
       });
     }, 100);
@@ -151,18 +191,32 @@ render(() => {
     setError(null);
     try {
       const res = IS_MOCK
-        ? await generateImagesMock({
-            prompt,
-            model: model(),
-            aspectRatio: aspectRatio(),
-            savePath: savePath(),
-          })
-        : await generateImages(geminiApiKey(), {
-            prompt,
-            model: model(),
-            aspectRatio: aspectRatio(),
-            savePath: savePath(),
-          });
+        ? provider() === "gemini"
+          ? await generateGeminiImagesMock({
+              prompt,
+              model: geminiModel(),
+              aspectRatio: aspectRatio(),
+              savePath: savePath(),
+            })
+          : await generateOpenAIImagesMock({
+              prompt,
+              model: openaiModel(),
+              imageSize: imageSize(),
+              savePath: savePath(),
+            })
+        : provider() === "gemini"
+          ? await generateGeminiImages(geminiApiKey(), {
+              prompt,
+              model: geminiModel(),
+              aspectRatio: aspectRatio(),
+              savePath: savePath(),
+            })
+          : await generateOpenAIImages(openaiApiKey(), {
+              prompt,
+              model: openaiModel(),
+              imageSize: imageSize(),
+              savePath: savePath(),
+            });
       setResult(res);
       setScreen("result");
     } catch (e) {
@@ -197,15 +251,26 @@ render(() => {
       )}
       {screen() === "model" && (
         <ModelScreen
-          onSelect={(m) => setModel(m)}
+          options={
+            provider() === "gemini"
+              ? GEMINI_MODEL_OPTIONS
+              : OPENAI_MODEL_OPTIONS
+          }
           selectRef={handleModelRef}
           step="Step 2 / 5"
         />
       )}
-      {screen() === "aspect" && (
+      {screen() === "aspect" && provider() === "gemini" && (
         <AspectScreen
           onSelect={(r) => setAspectRatio(r)}
           selectRef={handleAspectRef}
+          step="Step 3 / 5"
+        />
+      )}
+      {screen() === "image-size" && provider() === "openai" && (
+        <ImageSizeScreen
+          onSelect={(size) => setImageSize(size)}
+          selectRef={handleImageSizeRef}
           step="Step 3 / 5"
         />
       )}

@@ -48,7 +48,7 @@ export function PathScreen(props: Props) {
               ref={props.selectRef}
               options={PATH_PRESETS}
               width={50}
-              height={5}
+              height={Math.max(PATH_PRESETS.length * 2, 4)}
             />
             <text style={{ fg: "gray" }}>↑ ↓ to move, Enter to confirm</text>
           </>

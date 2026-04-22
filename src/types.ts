@@ -1,14 +1,30 @@
 // src/types.ts
-import type { Model, AspectRatio } from "./lib/gemini";
+import type { Model as GeminiModel, AspectRatio } from "./lib/gemini";
+import type { Model as OpenAIModel, ImageSize } from "./lib/openai";
+import type { Provider } from "./lib/providers";
 
-export type AppScreen = "api-key" | "generate" | "result";
+export type AppScreen =
+  | "provider"
+  | "api-key"
+  | "model"
+  | "aspect"
+  | "image-size"
+  | "path"
+  | "prompt"
+  | "result";
 
 export interface AppState {
   screen: AppScreen;
-  apiKey: string;
+  provider: Provider;
+  geminiApiKey: string;
+  openaiApiKey: string;
   prompt: string;
-  model: Model;
+  geminiModel: GeminiModel;
+  openaiModel: OpenAIModel;
   aspectRatio: AspectRatio;
+  imageSize: ImageSize;
+  savePath: string;
+  isCustomPath: boolean;
   isLoading: boolean;
   result: {
     filePaths: string[];
